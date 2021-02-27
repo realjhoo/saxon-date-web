@@ -1,28 +1,11 @@
-// #!/usr/bin/env /usr/local/bin/node
-// above is bash line for bitbar - comment out for non-node (has to be first line)
-
 /*
 Saxon Date Node App / BitBar / Web Page
   Equinox algorithm adapted from:
     Juergen Giesen 6.5.2012
   Moon Phase algorithm by Endel Dreyer Github @endel
-  by Jerry L Hoover 2019.12.04 (8 Ereyule 2269)
-  Command Line option added 4 Afteryule 2270
+  by jan Uwe 2019.12.04 (8 Ereyule 2269)
   Last updated 2020.12.29 (16 Ereyule 2270)
 */
-
-// leave commented for bitbar
-// -------------------------
-//BitBar metadata
-// bitbar.title - Saxon Date
-// bitbar.version - Version 1.0
-// bitbar.author - Jerry L Hoover
-// bitbar.author.github - realjhoo
-// bitbar.desc - Calculates the date using the Saxon lunisolar calendar
-// bitbar.image - working...
-// bitbar.dependencies - working...
-// bitbar.abouturl - Absolute URL to about information
-// -------------------------
 
 // dates do not work before March 1 AD 1900
 "use strict";
@@ -290,14 +273,6 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
     } else {
       justChanged = false;
     }
-
-    // debug output
-    // ***************************
-    // gregorian date
-    // console.log(month, day, year);
-    // saxon month, moon#, day of 'moonth'
-    // console.log(saxonMonth[moon], moon, saxonDay);
-    // ***************************
   }
 
   saxonDay += daysElapsed;
@@ -312,19 +287,7 @@ function main(dateArg) {
   let intercalary = false;
   let today; // to give proper scope
 
-  // if block for node app and bitbar only
-  // ---------------------
-  //if (dateArg === "") {
-  // today = new Date();
-  //} else {
-  //  today = new Date(dateArg);
-  // }
-  // ---------------------
-
-  // for web page
-  // ----------------
   today = new Date();
-  // ------------------
 
   let day = today.getDate(),
     month = today.getMonth(),
@@ -344,9 +307,6 @@ function main(dateArg) {
 
   // get computed Saxon Date
   let saxonDate = getSaxonDate(intercalary, ssDateString, today, year);
-
-  // output for bitbar and node console
-  console.log(saxonDate);
 
   // output for web page
   showSaxonDate(saxonDate);
@@ -388,29 +348,4 @@ const saxonMonth = [
   "Erelitha",
 ];
 
-// for node apps
-// -------------
-//let dateArg = "";
-//dateArg = process.argv.slice(2).toString();
-//main(dateArg);
-// -------------
-
-// -----------
-// for website
 main();
-// -----------
-
-// possible future feature - run once a day at 00:00hrs
-
-// -----------
-// for testing
-//main("2019.06.26");
-// -----------
-
-/*
-for website deployment:
-comment out for node apps lines, comment in for webside line
-comment out references to dateArg and the if block in main, leaving today=new Date();
-Leaving it in will cause date to be undefined, and do loops will never exit
-Comment out bash line at top of file
-*/
