@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400&display=swap");
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+body {
+  background-color: #333;
+  color: #e2e2e2;
+  font-family: "Rajdhani", sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+.output {
+  margin-top: 1rem;
+  margin-left: 1rem;
+  font-size: 1.5rem;
+  width: 80%;
+}
+
+.output p {
+  margin-top: 1rem;
+}
+
+.button-container {
+  margin: 4rem;
+}
+
+button {
+  margin-left: 50%;
+  transform: translate(-50%);
+  border-radius: 8px;
+  border: 2px solid #e2e2e2;
+  background-color: #333;
+  color: #e2e2e2;
+  padding: 0.8rem 2.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  outline: none;
+}
+
+button:hover {
+  background-color: #e2e2e2;
+  color: #333;
+}
+
+.explainer {
+  display: none;
+  margin-top: 1rem;
+  margin-left: 1rem;
+  font-size: 1.4rem;
+}
+
+.explainer p {
+  margin-bottom: 0.8rem;
+  line-height: 2rem;
+}
+
+a {
+  color: #fff;
+}
+
+.green {
+  color: limegreen;
+}
