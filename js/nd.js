@@ -29,13 +29,19 @@ function getJulianDay() {
     date++;
   }
 
-  // calculate julian date - thanks stackoverflow
-  let a = (14 - month) / 12;
+  // calculate julian date - thanks stackoverflow (jbabey)
+  let a = Math.floor((14 - month) / 12);
   let y = year + 4800 - a;
   let m = month + 12 * a - 3;
 
   let JD =
-    date + (153 * m + 2) / 5 + y * 365 + y / 4 - y / 100 + y / 400 - 32045;
+    date +
+    Math.floor((153 * m + 2) / 5) +
+    365 * y +
+    Math.floor(y / 4) -
+    Math.floor(y / 100) +
+    Math.floor(y / 400) -
+    32045;
 
   // remove the fractional bit. We'll replace with beats later
   let remainder = JD % 1;
