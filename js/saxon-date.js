@@ -5,25 +5,33 @@ Saxon Date Node App / BitBar / Web Page
   Moon Phase algorithm by Endel Dreyer Github @endel
   by jan Uwe 2019.12.04 (8 Ereyule 2269)
   Last updated 2020.12.29 (16 Ereyule 2270)
-  Adding Calendar feature
+  Adding Calendar feature (20 Sol 2271)
 */
 
 // dates do not work before March 1 AD 1900
 "use strict";
 // ========================================================
 function getJulianDate(day, mo, yr) {
-  let a = (14 - mo) / 12;
+  // calculate julian date - thanks stackoverflow (jbabey)
+  let a = Math.floor((14 - mo) / 12);
   let y = yr + 4800 - a;
   let m = mo + 12 * a - 3;
 
   let JD =
-    day + (153 * m + 2) / 5 + y * 365 + y / 4 - y / 100 + y / 400 - 32045;
+    day +
+    Math.floor((153 * m + 2) / 5) +
+    y * 365 +
+    Math.floor(y / 4) -
+    Math.floor(y / 100) +
+    Math.floor(y / 400) -
+    32045;
 
   return JD;
 }
 
 // ========================================================
 function sSolstice(year) {
+  // returns the julian date of the summer solstice in a given year
   const K = Math.PI / 180.0;
   let T, W, dL, ssJD;
   let y = (year - 2000) / 1000;
@@ -165,7 +173,7 @@ function adjustYear(day, month, year) {
 function isIntercalary(d, m, y) {
   // refactored. may fail?
   let intercalary = false;
-  const fortnight = 14; // a new moon within 14 days of solstice triggers intercalary month following Afterlitha
+  const fortnight = 14; // a new moon within 14 days of solstice triggers intercalary month following Afterlitha. Is this number too large?
 
   for (let i = 0; i < fortnight; i++) {
     let newMoon = isNewMoon(d + i, m, y);
@@ -182,7 +190,7 @@ function getSaxonYear(today, moon, year) {
   let saxonYear = year;
 
   // New Year is 1 Afteryule, so adjust year
-  if (saxonMonth[moon] === "Afteryule" && today.getMonth() === 11) {
+  if (saxonMonth(moon) === "Afteryule" && today.getMonth() === 11) {
     saxonYear += 251;
   } else {
     saxonYear += 250;
@@ -233,10 +241,23 @@ function fixTheDate(julianDateSS) {
 // ========================================================
 function getSaxonDate(intercalary, ssDateString, today, year) {
   const ssDate = new Date(ssDateString);
-  const ssJulianDate =
-    Math.floor(ssDate.valueOf() / (1000 * 60 * 60 * 24) - 0.5) + 2440588;
-  const todayJulianDate =
-    Math.floor(today.valueOf() / (1000 * 60 * 60 * 24) - 0.5) + 2440588;
+  let ssday = ssDate.getDate();
+  let ssmo = ssDate.getMonth();
+  let ssyr = ssDate.getFullYear();
+
+  const currDate = new Date();
+  let currDay = currDate.getDate();
+  let currMonth = currDate.getMonth();
+  let currYear = currDate.getFullYear();
+  // valueOf() outputs the unix epoch time
+  // const ssJulianDate =
+  //   Math.floor(ssDate.valueOf() / (1000 * 60 * 60 * 24) - 0.5) + 2440588;
+
+  const ssJulianDate = getJulianDate(ssday, ssmo, ssyr);
+  const todayJulianDate = getJulianDate(currDay, currMonth, currYear);
+  // const todayJulianDate =
+  //   Math.floor(today.valueOf() / (1000 * 60 * 60 * 24) - 0.5) + 2440588;
+
   let daysSinceSolstice = todayJulianDate - ssJulianDate;
   let saxonDay = 0;
   let moon = -1; // will this break at the summer solstice???
@@ -278,9 +299,47 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
 
   saxonDay += daysElapsed;
   const saxonYear = getSaxonYear(today, moon, year);
-  const saxonDate = saxonDay + " " + saxonMonth[moon] + " " + saxonYear;
+  const saxonDate = saxonDay + " " + saxonMonth(moon) + " " + saxonYear;
 
   return saxonDate;
+}
+
+// ========================================================
+function showSaxonDate(saxonDate) {
+  document.querySelector(".saxon-date").innerHTML = `<span>${saxonDate}</span>`;
+}
+
+// --------------------------------------------------------
+function toggleit() {
+  let toggleButton = document.getElementById("toggle-button");
+  let explainer = document.querySelector(".explainer");
+
+  if (toggleButton.innerHTML === "Show More") {
+    toggleButton.innerHTML = "Show Less";
+    explainer.style.display = "block";
+  } else {
+    toggleButton.innerHTML = "Show More";
+    explainer.style.display = "none";
+  }
+}
+
+// --------------------------------------------------------
+function saxonMonth(index) {
+  return [
+    "Afterlitha",
+    "Trilitha",
+    "Weed",
+    "Holy",
+    "Winterful",
+    "Blot",
+    "Ereyule",
+    "Afteryule",
+    "Sol",
+    "Retha",
+    "Easter",
+    "Trimilch",
+    "Erelitha",
+  ][index];
 }
 
 // ========================================================
@@ -313,40 +372,5 @@ function main(dateArg) {
   showSaxonDate(saxonDate);
 }
 
-// ========================================================
-function showSaxonDate(saxonDate) {
-  document.querySelector(".saxon-date").innerHTML = `<span>${saxonDate}</span>`;
-}
-
 // --------------------------------------------------------
-function toggleit() {
-  let toggleButton = document.getElementById("toggle-button");
-  let explainer = document.querySelector(".explainer");
-
-  if (toggleButton.innerHTML === "Show More") {
-    toggleButton.innerHTML = "Show Less";
-    explainer.style.display = "block";
-  } else {
-    toggleButton.innerHTML = "Show More";
-    explainer.style.display = "none";
-  }
-}
-
-// ========================================================
-const saxonMonth = [
-  "Afterlitha",
-  "Trilitha",
-  "Weed",
-  "Holy",
-  "Winterful",
-  "Blot",
-  "Ereyule",
-  "Afteryule",
-  "Sol",
-  "Retha",
-  "Easter",
-  "Trimilch",
-  "Erelitha",
-];
-
 main();
