@@ -5,6 +5,7 @@ Saxon Date Node App / BitBar / Web Page
   Moon Phase algorithm by Endel Dreyer Github @endel
   by jan Uwe 2019.12.04 (8 Ereyule 2269)
   Last updated 2020.12.29 (16 Ereyule 2270)
+  Adding Calendar feature
 */
 
 // dates do not work before March 1 AD 1900
