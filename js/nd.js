@@ -1,15 +1,29 @@
-const meliaName = [
-  "Nullamelia",
-  "Unumelia",
-  "Duomelia",
-  "Triamelia",
-  "Quattarmelia",
-  "Quinquemelia",
-  "Sexmelia",
-  "Septmelia",
-  "Octomelia",
-  "Novemelia",
-];
+function meliaName(index) {
+  return [
+    "Nullamelia",
+    "Unumelia",
+    "Duomelia",
+    "Triamelia",
+    "Quattarmelia",
+    "Quinquemelia",
+    "Sexmelia",
+    "Septmelia",
+    "Octomelia",
+    "Novemelia",
+  ][index];
+}
+// const meliaName = [
+//   "Nullamelia",
+//   "Unumelia",
+//   "Duomelia",
+//   "Triamelia",
+//   "Quattarmelia",
+//   "Quinquemelia",
+//   "Sexmelia",
+//   "Septmelia",
+//   "Octomelia",
+//   "Novemelia",
+// ];
 
 // --------------------------------------------------------
 function getJulianDay() {
@@ -105,16 +119,16 @@ function showNumerareDierum(triennium, melia, centum, thebeats) {
   const output = document.querySelector(".output");
   output.innerHTML = `Today, is the <span class="green">${centum}${getOrdinalIndicator(
     centum
-  )} day of ${
-    meliaName[melia]
-  } in Triennium ${triennium}.</span></p> <p>Or, <span class="green">${
-    meliaName[melia]
-  } ${centum}, ${triennium}</span>.</p> 
+  )} day of ${meliaName(
+    melia
+  )} in Triennium ${triennium}.</span></p> <p>Or, <span class="green">${meliaName(
+    melia
+  )} ${centum}, ${triennium}</span>.</p> 
   <p>Or, even: <span class="green">${triennium}.${melia}.${centum}</span>.</p> 
   <p>The time, in beats, may be appended: <span class="green">${triennium} ${melia} ${centum} ${thebeats}</span></p>
-  <p>Or, <span class="green">${centum} ${
-    meliaName[melia]
-  } ${triennium} ${thebeats}</span></p> `;
+  <p>Or, <span class="green">${centum} ${meliaName(
+    melia
+  )} ${triennium} ${thebeats}</span></p> `;
 }
 
 // --------------------------------------------------------

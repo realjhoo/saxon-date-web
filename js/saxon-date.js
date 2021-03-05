@@ -242,19 +242,24 @@ function fixTheDate(julianDateSS) {
 function getSaxonDate(intercalary, ssDateString, today, year) {
   const ssDate = new Date(ssDateString);
   let ssday = ssDate.getDate();
-  let ssmo = ssDate.getMonth();
+  let ssmo = ssDate.getMonth() + 1;
   let ssyr = ssDate.getFullYear();
+
+  console.log(ssDate);
 
   const currDate = new Date();
   let currDay = currDate.getDate();
-  let currMonth = currDate.getMonth();
+  let currMonth = currDate.getMonth() + 1;
   let currYear = currDate.getFullYear();
   // valueOf() outputs the unix epoch time
   // const ssJulianDate =
   //   Math.floor(ssDate.valueOf() / (1000 * 60 * 60 * 24) - 0.5) + 2440588;
 
   const ssJulianDate = getJulianDate(ssday, ssmo, ssyr);
+  console.log("summer solstice: " + ssJulianDate);
+
   const todayJulianDate = getJulianDate(currDay, currMonth, currYear);
+  console.log("today: " + todayJulianDate);
   // const todayJulianDate =
   //   Math.floor(today.valueOf() / (1000 * 60 * 60 * 24) - 0.5) + 2440588;
 
@@ -277,7 +282,29 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
     // Convert date of solstice to d,m,y -> test for new moon
     let [day, month, year] = JDtoDateString(ssJulianDate + i);
     let newMoon = isNewMoon(day, month, year);
+    // console.log(day, month, year);
+    // calendar testing * * * * * * * *  * * * * * * * * * * * *
+    // NEED TO FIND THE NEXT NEW MOON - SUBTARCT
+    // 1 DAY WILL BE MONTH LENGTH
+    if (newMoon && !justChanged) {
+      // moon+1 is essentially the proposed output of getSaxonMonth
+      console.log("new moon: ", saxonMonth(moon + 1), moon + 1);
 
+      // JD of current new moon
+      var newMoonJD = ssJulianDate + i;
+
+      console.log("New Moon JD: ", newMoonJD);
+
+      // gets the day of the week
+      var firstDay = new Date(year, month + 1).getDay();
+      console.log(dayName(firstDay));
+      var [x, xx, xxx] = JDtoDateString(ssJulianDate + i);
+      console.log("Final Day of month: ", xx, x, xxx);
+    }
+    // let [a,b,c] = JDtoDateString()
+    // let y = nextNewMoon(day, month, year);
+
+    // end testing * * * * * * * * * * *  * * ** * * * * * *  * *
     if (newMoon && !justChanged) {
       justChanged = true; //flag to run once
 
@@ -296,11 +323,19 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
       justChanged = false;
     }
   }
+  // returns the JD of the next new moon
+  let dummy = nextNewMoon(newMoonJD);
+  let qqq = dummy - newMoonJD;
 
-  saxonDay += daysElapsed;
+  console.log("# of days: ", qqq);
+
+  saxonDay += daysElapsed + 1;
   const saxonYear = getSaxonYear(today, moon, year);
   const saxonDate = saxonDay + " " + saxonMonth(moon) + " " + saxonYear;
-
+  // * * *  CALENDAR TESTING * * *
+  showCalendar(qqq, firstDay, moon, saxonYear);
+  //  * * * * * * * * * * * * * * *
+  console.log("Last Line: ", dayName(firstDay));
   return saxonDate;
 }
 
@@ -324,6 +359,24 @@ function toggleit() {
 }
 
 // --------------------------------------------------------
+function nextNewMoon(newMoonJD) {
+  // find the next new moon
+
+  do {
+    newMoonJD += 1;
+    var [date, month, year] = JDtoDateString(newMoonJD);
+    var x = isNewMoon(date, month, year);
+  } while (!x);
+
+  console.log("next moon: ", x);
+
+  let dumkopf = getJulianDate(date, month, year);
+
+  console.log(year, month, date);
+  return dumkopf;
+}
+
+// --------------------------------------------------------
 function saxonMonth(index) {
   return [
     "Afterlitha",
@@ -342,6 +395,18 @@ function saxonMonth(index) {
   ][index];
 }
 
+// --------------------------------------------------------
+function dayName(index) {
+  return [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ][index];
+}
 // ========================================================
 function main(dateArg) {
   let intercalary = false;
@@ -374,3 +439,72 @@ function main(dateArg) {
 
 // --------------------------------------------------------
 main();
+
+/* 
+To make this work, nned to create
+getSaxonMonth() which could be used like
+today = new saxonDate.getSaxonMonth();
+where getSaxonMonth returns a number between 0 and 12
+Will also need getSaxonDate() to work the same way
+
+Will also need to know the day of the week of a given 1st day of moon
+and the number of days in a given moon
+
+day of the week can be determined by converting the saxondate into a jd and a jd imnto a date. then...
+     let firstDay = (new Date(year, month)).getDay();
+getting JD of SD. JD of ss is knowable. count days since. an accumulator. this
+way, each saxondate has a daycount with it. :thinking emoji:
+     */
+
+// * * * *TEST CALENDAR * * *
+// **************************************************************
+//  function showCalendar(month, year) {
+function showCalendar(daysInMonth, firstDay, month, year) {
+  let today = new Date();
+  //let firstDay = new Date(year, month).getDay();
+  // let daysInMonth = 32 - new Date(year, month, 32).getDate();
+
+  let tbl = document.getElementById("calendar-body"); // body of the calendar
+
+  // clearing all previous cells
+  tbl.innerHTML = "";
+
+  // filing data about month and in the page via DOM.
+  monthAndYear.innerHTML = saxonMonth(month) + " " + year;
+  // selectYear.value = year;
+  //selectMonth.value = month;
+
+  // creating all cells
+  let date = 1;
+  for (let i = 0; i < 6; i++) {
+    // creates a table row
+    let row = document.createElement("tr");
+
+    //creating individual cells, filing them up with data.
+    for (let j = 0; j < 7; j++) {
+      if (i === 0 && j < firstDay) {
+        let cell = document.createElement("td");
+        let cellText = document.createTextNode("");
+        cell.appendChild(cellText);
+        row.appendChild(cell);
+      } else if (date > daysInMonth) {
+        break;
+      } else {
+        let cell = document.createElement("td");
+        let cellText = document.createTextNode(date);
+        if (
+          date === today.getDate() &&
+          year === today.getFullYear() &&
+          month === today.getMonth()
+        ) {
+          cell.classList.add("bg-info");
+        } // color today's date
+        cell.appendChild(cellText);
+        row.appendChild(cell);
+        date++;
+      }
+    }
+
+    tbl.appendChild(row); // appending each row into calendar body.
+  }
+}
