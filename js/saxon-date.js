@@ -329,7 +329,7 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
   let nextNewMoon = getNextNewMoon(newMoonJD);
   let daysInMonth = nextNewMoon - newMoonJD;
 
-  saxonDay += daysElapsed + 1;
+  saxonDay += daysElapsed + 1; // now agrees with day of the week
   const saxonYear = getSaxonYear(today, moon, year);
   const saxonDate = saxonDay + " " + getSaxonMonth(moon) + " " + saxonYear;
 
