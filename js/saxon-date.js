@@ -1,24 +1,56 @@
 /*
-Saxon Date Node App / BitBar / Web Page
+Saxon Date Node App / BitBar Plugin / Web Page
+by jan Uwe 2019.12.04 (8 Ereyule 2269)
+Last updated 2020.12.29 (16 Ereyule 2270)
+Adding Calendar feature (20 Sol 2271)
   Equinox algorithm adapted from:
-    Juergen Giesen 6.5.2012
+  Juergen Giesen 6.5.2012
   Moon Phase algorithm by Endel Dreyer Github @endel
-  by jan Uwe 2019.12.04 (8 Ereyule 2269)
-  Last updated 2020.12.29 (16 Ereyule 2270)
-  Adding Calendar feature (20 Sol 2271)
 */
 
 // dates do not work before March 1 AD 1900
 "use strict";
+// --------------------------------------------------------
+function getSaxonMonth(index) {
+  return [
+    "Afterlitha",
+    "Trilitha",
+    "Weed",
+    "Holy",
+    "Winterful",
+    "Blot",
+    "Ereyule",
+    "Afteryule",
+    "Sol",
+    "Retha",
+    "Easter",
+    "Trimilch",
+    "Erelitha",
+  ][index];
+}
+
+// --------------------------------------------------------
+function getDayName(index) {
+  return [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ][index];
+}
+
 // ========================================================
-function getJulianDate(day, mo, yr) {
-  // calculate julian date - thanks stackoverflow (jbabey)
-  let a = Math.floor((14 - mo) / 12);
-  let y = yr + 4800 - a;
-  let m = mo + 12 * a - 3;
+function getJulianDate(date, month, year) {
+  // returns julian date
+  let a = Math.floor((14 - month) / 12);
+  let y = year + 4800 - a;
+  let m = month + 12 * a - 3;
 
   let JD =
-    day +
+    date +
     Math.floor((153 * m + 2) / 5) +
     y * 365 +
     Math.floor(y / 4) -
@@ -30,7 +62,7 @@ function getJulianDate(day, mo, yr) {
 }
 
 // ========================================================
-function sSolstice(year) {
+function getSolsticeJD(year) {
   // returns the julian date of the summer solstice in a given year
   const K = Math.PI / 180.0;
   let T, W, dL, ssJD;
@@ -47,13 +79,12 @@ function sSolstice(year) {
   W *= K;
   dL = 1.0 + 0.0334 * Math.cos(W) + 0.0007 * Math.cos(2 * W);
 
-  // summer solstice Julian Date = ssJD
   ssJD = JDE0 + (0.00001 * S(T)) / dL - (66.0 + (year - 2000) * 1.0) / 86400.0;
 
   return ssJD;
 }
 
-// ======Helper Function for sSolstice=====================
+// ======Helper Function for getSolsticeJD=====================
 function S(T) {
   const K = Math.PI / 180.0;
   let x;
@@ -69,12 +100,10 @@ function S(T) {
   x += 58 * Math.cos(K * (119.81 + 33718.147 * T));
   x += 52 * Math.cos(K * (297.17 + 150.678 * T));
   x += 50 * Math.cos(K * (21.02 + 2281.226 * T));
-
   x += 45 * Math.cos(K * (247.54 + 29929.562 * T));
   x += 44 * Math.cos(K * (325.15 + 31555.956 * T));
   x += 29 * Math.cos(K * (60.93 + 4443.417 * T));
   x += 18 * Math.cos(K * (155.12 + 67555.328 * T));
-
   x += 17 * Math.cos(K * (288.79 + 4562.452 * T));
   x += 16 * Math.cos(K * (198.04 + 62894.029 * T));
   x += 14 * Math.cos(K * (199.76 + 31436.921 * T));
@@ -89,10 +118,9 @@ function S(T) {
 
 // ========================================================
 function JDtoDateString(JD) {
-  let day, month, year;
+  let date, month, year;
   let B, D, F;
   let JD0, C, E;
-  let dayStr = "";
 
   JD0 = Math.floor(JD + 0.5);
   B = Math.floor((JD0 - 1867216.25) / 36524.25);
@@ -100,65 +128,60 @@ function JDtoDateString(JD) {
   D = Math.floor((C - 122.1) / 365.25);
   E = 365.0 * D + Math.floor(D / 4);
   F = Math.floor((C - E) / 30.6001);
+  date = Math.floor(C - E + 0.5) - Math.floor(30.6001 * F);
 
-  day = Math.floor(C - E + 0.5) - Math.floor(30.6001 * F);
-  dayStr = "" + day;
-  if (day < 10) dayStr = " " + dayStr;
   month = F - 1 - 12 * Math.floor(F / 14);
   year = D - 4715 - Math.floor((7 + month) / 10);
 
-  return [day, month, year];
+  return [date, month, year];
 }
 
 // ========================================================
-function isNewMoon(date, month, yr) {
-  const minNewMoon = 0.02;
-  const maxNewMoon = 0.98;
+function isNewMoon(date, month, year) {
+  // use min and max to tune the sensitivity for new moon detection
+  const maxNewMoon = 0.98; // moon is almost new
+  const minNewMoon = 0.02; // moon is just past new
+
   let newMoon = false;
-  let c = 0,
-    e = 0,
-    jd = 0,
-    b = 0;
-  // jd represents the age of the moon 0-99
 
   if (month < 3) {
-    yr--;
+    year--;
     month += 12;
   }
 
-  month++; // because js months start with 0
+  month++; // because jan = 0
 
-  c = 365.25 * yr;
-  e = 30.6 * month;
-  jd = c + e + date - 694039.09;
+  let c = 365.25 * year; // mean length of calendar year
+  let e = 30.6 * month; // mean length of calendar month
 
-  jd /= 29.5305882;
+  let moonAge = c + e + date - 694039.09; // num of days since known new moon 1900.01.01
+  moonAge /= 29.5305882; // average duration of lunation
 
-  b = parseInt(jd);
-  jd -= b;
-
-  let moonAge = jd;
+  // remove the whole number, leave fraction (current age of moon)
+  let moonAgeInteger = parseInt(moonAge);
+  moonAge -= moonAgeInteger; // a number between 0 & 1
 
   if (moonAge > maxNewMoon || moonAge < minNewMoon) {
     newMoon = true;
   } else {
     newMoon = false;
   }
+
   return newMoon;
 }
 
 // ========================================================
 function adjustYear(day, month, year) {
-  // if ss hasnt happened yet, use last year's ss
-  const MAY = 4,
-    JUNE = 5;
+  // if solstice hasnt happened yet, use last year's solstice
+  const MAY = 4; // solstice hasnt happened yet
+  const JUNE = 5; // solstice happens in june
 
   if (month <= MAY) {
     year--;
   }
   if (month === JUNE) {
-    // get day of solstice. Returns array but m & y not used
-    let [dayOfss, m, y] = JDtoDateString(sSolstice(year));
+    // find date of solstice. Returns array but m & y not used
+    let [dayOfss, m, y] = JDtoDateString(getSolsticeJD(year));
 
     // if date is before solstice decrement year
     if (day < dayOfss) {
@@ -170,13 +193,13 @@ function adjustYear(day, month, year) {
 }
 
 // ========================================================
-function isIntercalary(d, m, y) {
+function isIntercalary(date, month, year) {
   // refactored. may fail?
   let intercalary = false;
   const fortnight = 14; // a new moon within 14 days of solstice triggers intercalary month following Afterlitha. Is this number too large?
 
   for (let i = 0; i < fortnight; i++) {
-    let newMoon = isNewMoon(d + i, m, y);
+    let newMoon = isNewMoon(date + i, month, year);
     if (newMoon) {
       intercalary = true;
       return intercalary;
@@ -187,10 +210,11 @@ function isIntercalary(d, m, y) {
 
 // ========================================================
 function getSaxonYear(today, moon, year) {
+  const December = 11;
   let saxonYear = year;
 
   // New Year is 1 Afteryule, so adjust year
-  if (saxonMonth(moon) === "Afteryule" && today.getMonth() === 11) {
+  if (getSaxonMonth(moon) === "Afteryule" && today.getMonth() === December) {
     saxonYear += 251;
   } else {
     saxonYear += 250;
@@ -240,36 +264,30 @@ function fixTheDate(julianDateSS) {
 
 // ========================================================
 function getSaxonDate(intercalary, ssDateString, today, year) {
+  // ss = summer solstice
   const ssDate = new Date(ssDateString);
-  let ssday = ssDate.getDate();
-  let ssmo = ssDate.getMonth() + 1;
-  let ssyr = ssDate.getFullYear();
-
-  console.log(ssDate);
+  const ssDay = ssDate.getDate();
+  const ssMonth = ssDate.getMonth() + 1;
+  const ssYear = ssDate.getFullYear();
 
   const currDate = new Date();
-  let currDay = currDate.getDate();
-  let currMonth = currDate.getMonth() + 1;
-  let currYear = currDate.getFullYear();
-  // valueOf() outputs the unix epoch time
-  // const ssJulianDate =
-  //   Math.floor(ssDate.valueOf() / (1000 * 60 * 60 * 24) - 0.5) + 2440588;
+  const currDay = currDate.getDate();
+  const currMonth = currDate.getMonth() + 1;
+  const currYear = currDate.getFullYear();
 
-  const ssJulianDate = getJulianDate(ssday, ssmo, ssyr);
-  console.log("summer solstice: " + ssJulianDate);
-
+  const ssJulianDate = getJulianDate(ssDay, ssMonth, ssYear);
   const todayJulianDate = getJulianDate(currDay, currMonth, currYear);
-  console.log("today: " + todayJulianDate);
-  // const todayJulianDate =
-  //   Math.floor(today.valueOf() / (1000 * 60 * 60 * 24) - 0.5) + 2440588;
-
   let daysSinceSolstice = todayJulianDate - ssJulianDate;
+
+  // initialize and scope vars
   let saxonDay = 0;
   let moon = -1; // will this break at the summer solstice???
   let justChanged = false;
-  let daysElapsed = 0; //for scope
+  let daysElapsed = 0;
+  let newMoonJD;
+  let firstDay;
 
-  // dates between solstice and 1st new moon need fixing
+  // dates between solstice and 1st new moon need fixing // *** why?
   let dateIsBetween = isBetween(todayJulianDate, ssJulianDate);
 
   if (dateIsBetween) {
@@ -282,31 +300,14 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
     // Convert date of solstice to d,m,y -> test for new moon
     let [day, month, year] = JDtoDateString(ssJulianDate + i);
     let newMoon = isNewMoon(day, month, year);
-    // console.log(day, month, year);
-    // calendar testing * * * * * * * *  * * * * * * * * * * * *
-    // NEED TO FIND THE NEXT NEW MOON - SUBTARCT
-    // 1 DAY WILL BE MONTH LENGTH
-    if (newMoon && !justChanged) {
-      // moon+1 is essentially the proposed output of getSaxonMonth
-      console.log("new moon: ", saxonMonth(moon + 1), moon + 1);
 
-      // JD of current new moon
-      var newMoonJD = ssJulianDate + i;
-
-      console.log("New Moon JD: ", newMoonJD);
-
-      // gets the day of the week
-      var firstDay = new Date(year, month + 1).getDay();
-      console.log(dayName(firstDay));
-      var [x, xx, xxx] = JDtoDateString(ssJulianDate + i);
-      console.log("Final Day of month: ", xx, x, xxx);
-    }
-    // let [a,b,c] = JDtoDateString()
-    // let y = nextNewMoon(day, month, year);
-
-    // end testing * * * * * * * * * * *  * * ** * * * * * *  * *
     if (newMoon && !justChanged) {
       justChanged = true; //flag to run once
+
+      // JD of current new moon
+      newMoonJD = ssJulianDate + i;
+      // gets the day of the week
+      firstDay = new Date(year, month + 1).getDay();
 
       if (intercalary === false && moon === 0) {
         // moon increments twice to skip Trilitha when not intercalary
@@ -323,19 +324,17 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
       justChanged = false;
     }
   }
-  // returns the JD of the next new moon
-  let dummy = nextNewMoon(newMoonJD);
-  let qqq = dummy - newMoonJD;
 
-  console.log("# of days: ", qqq);
+  // returns the JD of the next new moon
+  let nextNewMoon = getNextNewMoon(newMoonJD);
+  let daysInMonth = nextNewMoon - newMoonJD;
 
   saxonDay += daysElapsed + 1;
   const saxonYear = getSaxonYear(today, moon, year);
-  const saxonDate = saxonDay + " " + saxonMonth(moon) + " " + saxonYear;
-  // * * *  CALENDAR TESTING * * *
-  showCalendar(qqq, firstDay, moon, saxonYear);
-  //  * * * * * * * * * * * * * * *
-  console.log("Last Line: ", dayName(firstDay));
+  const saxonDate = saxonDay + " " + getSaxonMonth(moon) + " " + saxonYear;
+
+  showCalendar(daysInMonth, firstDay, saxonYear, moon, saxonDay);
+
   return saxonDate;
 }
 
@@ -346,6 +345,7 @@ function showSaxonDate(saxonDate) {
 
 // --------------------------------------------------------
 function toggleit() {
+  // toggles the visibility of the explainer section
   let toggleButton = document.getElementById("toggle-button");
   let explainer = document.querySelector(".explainer");
 
@@ -359,76 +359,93 @@ function toggleit() {
 }
 
 // --------------------------------------------------------
-function nextNewMoon(newMoonJD) {
-  // find the next new moon
+function getNextNewMoon(newMoonJD) {
+  // returns julian date of next new moon
+
+  let date,
+    month,
+    year = [];
+  let newMoon = false;
 
   do {
     newMoonJD += 1;
-    var [date, month, year] = JDtoDateString(newMoonJD);
-    var x = isNewMoon(date, month, year);
-  } while (!x);
+    [date, month, year] = JDtoDateString(newMoonJD);
+    newMoon = isNewMoon(date, month, year);
+  } while (!newMoon);
 
-  console.log("next moon: ", x);
+  let nextNewMoonJD = getJulianDate(date, month, year);
 
-  let dumkopf = getJulianDate(date, month, year);
-
-  console.log(year, month, date);
-  return dumkopf;
+  return nextNewMoonJD;
 }
 
 // --------------------------------------------------------
-function saxonMonth(index) {
-  return [
-    "Afterlitha",
-    "Trilitha",
-    "Weed",
-    "Holy",
-    "Winterful",
-    "Blot",
-    "Ereyule",
-    "Afteryule",
-    "Sol",
-    "Retha",
-    "Easter",
-    "Trimilch",
-    "Erelitha",
-  ][index];
+// based on https://github.com/niinpatel/calendarHTML-Javascript
+function showCalendar(daysInMonth, firstDay, saxonYear, saxonMonth, saxonDay) {
+  const calendarBody = document.getElementById("calendar-body");
+  const monthYear = document.getElementById("month-year");
+
+  // clearing any previous cells
+  calendarBody.innerHTML = "";
+  // fill in month and year
+  monthYear.innerHTML = getSaxonMonth(saxonMonth) + " " + saxonYear;
+  // these two lines are for dropdown boxes
+  // selectYear.value = year;
+  //selectMonth.value = month;
+
+  // create &populate table
+  let date = 1;
+  for (let i = 0; i < 6; i++) {
+    // creates table row (tr)
+    const row = document.createElement("tr");
+    //create cells with data (td).
+    for (let j = 0; j < 7; j++) {
+      // blank cells before the 1st
+      if (i === 0 && j < firstDay) {
+        const cell = document.createElement("td");
+        const cellText = document.createTextNode("");
+        cell.appendChild(cellText);
+        row.appendChild(cell);
+        // end this after last day of month
+      } else if (date > daysInMonth) {
+        break;
+      } else {
+        // fill in the cells
+        const cell = document.createElement("td");
+        const cellText = document.createTextNode(date);
+        // highlight today's cell
+        if (
+          // year === saxonYear() &&
+          // month === saxonMonth() &&
+          date === saxonDay
+        ) {
+          cell.classList.add("highlight-cell");
+        }
+        cell.appendChild(cellText);
+        row.appendChild(cell);
+        date++;
+      }
+    }
+
+    calendarBody.appendChild(row); // appending each row into calendar body.
+  }
 }
 
-// --------------------------------------------------------
-function dayName(index) {
-  return [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ][index];
-}
 // ========================================================
-function main(dateArg) {
-  let intercalary = false;
-  let today; // to give proper scope
+function main() {
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth();
+  const year = today.getFullYear();
 
-  today = new Date();
+  // before summer solstice? decrement year
+  let ssYear = adjustYear(day, month, year);
 
-  let day = today.getDate(),
-    month = today.getMonth(),
-    ssyear = today.getFullYear(),
-    year = today.getFullYear();
-
-  // if before summer solstice, decrement year
-  // so, if the ss hasnt happened yet, look at last years ss
-  ssyear = adjustYear(day, month, ssyear);
-
-  // get day month and year of summer solstice
-  const [d, m, y] = JDtoDateString(sSolstice(ssyear));
+  // get date string of summer solstice
+  const [d, m, y] = JDtoDateString(getSolsticeJD(ssYear));
   const ssDateString = y + "/" + m + "/" + d; // use / for Safari
 
   // 13 moons or 12?
-  intercalary = isIntercalary(d, m, y);
+  let intercalary = isIntercalary(d, m, y);
 
   // get computed Saxon Date
   let saxonDate = getSaxonDate(intercalary, ssDateString, today, year);
@@ -439,72 +456,3 @@ function main(dateArg) {
 
 // --------------------------------------------------------
 main();
-
-/* 
-To make this work, nned to create
-getSaxonMonth() which could be used like
-today = new saxonDate.getSaxonMonth();
-where getSaxonMonth returns a number between 0 and 12
-Will also need getSaxonDate() to work the same way
-
-Will also need to know the day of the week of a given 1st day of moon
-and the number of days in a given moon
-
-day of the week can be determined by converting the saxondate into a jd and a jd imnto a date. then...
-     let firstDay = (new Date(year, month)).getDay();
-getting JD of SD. JD of ss is knowable. count days since. an accumulator. this
-way, each saxondate has a daycount with it. :thinking emoji:
-     */
-
-// * * * *TEST CALENDAR * * *
-// **************************************************************
-//  function showCalendar(month, year) {
-function showCalendar(daysInMonth, firstDay, month, year) {
-  let today = new Date();
-  //let firstDay = new Date(year, month).getDay();
-  // let daysInMonth = 32 - new Date(year, month, 32).getDate();
-
-  let tbl = document.getElementById("calendar-body"); // body of the calendar
-
-  // clearing all previous cells
-  tbl.innerHTML = "";
-
-  // filing data about month and in the page via DOM.
-  monthAndYear.innerHTML = saxonMonth(month) + " " + year;
-  // selectYear.value = year;
-  //selectMonth.value = month;
-
-  // creating all cells
-  let date = 1;
-  for (let i = 0; i < 6; i++) {
-    // creates a table row
-    let row = document.createElement("tr");
-
-    //creating individual cells, filing them up with data.
-    for (let j = 0; j < 7; j++) {
-      if (i === 0 && j < firstDay) {
-        let cell = document.createElement("td");
-        let cellText = document.createTextNode("");
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-      } else if (date > daysInMonth) {
-        break;
-      } else {
-        let cell = document.createElement("td");
-        let cellText = document.createTextNode(date);
-        if (
-          date === today.getDate() &&
-          year === today.getFullYear() &&
-          month === today.getMonth()
-        ) {
-          cell.classList.add("bg-info");
-        } // color today's date
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-        date++;
-      }
-    }
-
-    tbl.appendChild(row); // appending each row into calendar body.
-  }
-}

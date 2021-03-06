@@ -1,4 +1,13 @@
-function meliaName(index) {
+/**
+ * Ad Numerare Dierum
+ * Returns current Julian Date UTC +1
+ * Shows current Beat Time
+ * A fun time measuring project
+ * JL Hoover 2059270
+ */
+
+// --------------------------------------------------------
+function getMeliaName(index) {
   return [
     "Nullamelia",
     "Unumelia",
@@ -12,22 +21,10 @@ function meliaName(index) {
     "Novemelia",
   ][index];
 }
-// const meliaName = [
-//   "Nullamelia",
-//   "Unumelia",
-//   "Duomelia",
-//   "Triamelia",
-//   "Quattarmelia",
-//   "Quinquemelia",
-//   "Sexmelia",
-//   "Septmelia",
-//   "Octomelia",
-//   "Novemelia",
-// ];
 
 // --------------------------------------------------------
 function getJulianDay() {
-  // gets the julian date, off set UTC+1 tho
+  // returns current julian date, off set UTC+1 tho
   let today = new Date();
   let year = today.getUTCFullYear(),
     month = today.getUTCMonth(),
@@ -57,7 +54,7 @@ function getJulianDay() {
     Math.floor(y / 400) -
     32045;
 
-  // remove the fractional bit. We'll replace with beats later
+  // remove the fractional bit
   let remainder = JD % 1;
   JD -= remainder;
 
@@ -82,13 +79,13 @@ function getBeats() {
 
   let secondsSoFar = convertToSeconds(hours, minutes, seconds);
 
-  // * * * convert to beats, aka internet time * * *
-  // the next 4 lines of code could be combined. Separated for clarity
+  // convert to beats - next 4 lines separated for clarity
+
   // chop excessive precision
   let internetTime = (secondsSoFar / secondsPerBeat).toFixed(2);
   // pad with leading zeros
   internetTime = "000" + internetTime;
-  // cut to correct length start with back
+  // cut to correct length - start rightmost
   internetTime = internetTime.slice(-6);
   // add the @
   internetTime = "@" + internetTime;
@@ -103,7 +100,7 @@ function convertToSeconds(hours, minutes, seconds) {
 
 // --------------------------------------------------------
 function sliceJD(ND) {
-  // extract elements from the JD
+  // extract elements from the JD for ND
   let triennium = ND.toString().slice(0, 4);
   let melia = ND.toString().slice(4, 5);
   let centum = ND.toString().slice(5, 7);
@@ -114,27 +111,28 @@ function sliceJD(ND) {
 // --------------------------------------------------------
 function showNumerareDierum(triennium, melia, centum, thebeats) {
   let today = new Date();
-  //let newDate = today.toISOString().slice(0, 10); // shows current gregorian date bigendian with dash separators
 
   const output = document.querySelector(".output");
+
   output.innerHTML = `Today, is the <span class="green">${centum}${getOrdinalIndicator(
     centum
-  )} day of ${meliaName(
+  )} day of ${getMeliaName(
     melia
-  )} in Triennium ${triennium}.</span></p> <p>Or, <span class="green">${meliaName(
+  )} in Triennium ${triennium}.</span></p> <p>Or, <span class="green">${getMeliaName(
     melia
   )} ${centum}, ${triennium}</span>.</p> 
   <p>Or, even: <span class="green">${triennium}.${melia}.${centum}</span>.</p> 
   <p>The time, in beats, may be appended: <span class="green">${triennium} ${melia} ${centum} ${thebeats}</span></p>
-  <p>Or, <span class="green">${centum} ${meliaName(
+  <p>Or, <span class="green">${centum} ${getMeliaName(
     melia
   )} ${triennium} ${thebeats}</span></p> `;
 }
 
 // --------------------------------------------------------
 function toggleit() {
-  let toggleButton = document.getElementById("toggle-button");
-  let explainer = document.querySelector(".explainer");
+  // toggles visibility of explainer in DOM - obviously
+  const toggleButton = document.getElementById("toggle-button");
+  const explainer = document.querySelector(".explainer");
 
   if (toggleButton.innerHTML === "Show More") {
     toggleButton.innerHTML = "Show Less";
@@ -151,6 +149,7 @@ function getOrdinalIndicator(number) {
   let rightmostDigit = number.toString().slice(-1);
   let ordinalIndicator = "";
 
+  // in English, 11 - 13 are exceptions to the rule
   if (number >= 11 && number <= 13) {
     ordinalIndicator = "th";
   } else if (rightmostDigit < 1 || rightmostDigit >= 4) {
@@ -173,24 +172,8 @@ function main() {
   let [triennium, melia, centum] = sliceJD(ND);
 
   showNumerareDierum(triennium, melia, centum, thebeats);
-
-  // console.log(triennium, meliaName[melia], centum);
-  // console.log(triennium, meliaName[melia], centum + " " + thebeats);
-  // console.log(ND);
 }
 
 // --------------------------------------------------------
 main();
 setInterval(main, 1000);
-/* 
-TODO: 
-x Place lose code in functions... I hate lose code!!!
-x How to do ordinal identifiers?
-x Output the results to the web page
-Make page pretty for gods' sake sorta... ???
-x Rewrite blurb so it doesnt want to show current Numerare Dierum multiple times
-x Run the current and updating time at the top
-x Adapt the code to the bitbar beats :-)
-Deploy this page to saxondate.com using the menu bar there
-Rewrite the menu bar on saxon-date-web. Dev Ed?
-*/

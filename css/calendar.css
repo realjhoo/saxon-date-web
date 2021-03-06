@@ -1,0 +1,27 @@
+.calendar-container {
+  text-align: center;
+}
+
+.calendar-container h3 {
+  font-size: 2rem;
+}
+
+#month-year {
+  font-size: 2.5rem;
+}
+
+.table {
+  margin-left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.7rem;
+}
+
+.highlight-cell {
+  background-color: lightblue;
+  color: #333;
+}
+
+td {
+  outline: 1px #e2e2e2 solid;
+  padding: 8px;
+}
