@@ -1,4 +1,4 @@
-# Anglo Saxon Calemndar Date & Ad Numerare Dierum Date
+# Anglo Saxon Calendar Date & Ad Numerare Dierum Date
 ## Saxon date
 According to the Venerable Bede, the pre-Christian Angles, Saxons, Jutes and Frisians used a soli-lunar calendar. In his book, De Temporum Ratione, published in the 725, Bede lays out the rules by which this calendar worked, and the names of the months among the English peoples. I became curious how this calendar worked. So, using Bede's rules, I coded this Lunar calendar in Javascript. Because I could. Thanks, Bede.
 
