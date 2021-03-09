@@ -152,7 +152,7 @@ function isNewMoon(date, month, year) {
   month++; // because jan = 0
 
   let c = 365.25 * year; // mean length of calendar year
-  let e = 30.6 * month; // mean length of calendar month
+  let e = 30.6001 * month; // mean length of calendar month
 
   let moonAge = c + e + date - 694039.09; // num of days since known new moon 1900.01.01
   moonAge /= 29.5305882; // average duration of lunation
@@ -271,7 +271,7 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
   const ssYear = ssDate.getFullYear();
 
   const currDate = new Date();
-  const currDay = currDate.getDate();
+  const currDay = currDate.getDate() + 1;
   const currMonth = currDate.getMonth() + 1;
   const currYear = currDate.getFullYear();
 
@@ -329,9 +329,16 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
   let nextNewMoon = getNextNewMoon(newMoonJD);
   let daysInMonth = nextNewMoon - newMoonJD;
 
-  saxonDay += daysElapsed + 1; // now agrees with day of the week
+  saxonDay += daysElapsed; // now agrees with day of the week
   const saxonYear = getSaxonYear(today, moon, year);
-  const saxonDate = saxonDay + " " + getSaxonMonth(moon) + " " + saxonYear;
+  const saxonDate =
+    getDayName(todayJulianDate % 7) +
+    " " +
+    saxonDay +
+    " " +
+    getSaxonMonth(moon) +
+    " " +
+    saxonYear;
 
   showCalendar(daysInMonth, firstDay, saxonYear, moon, saxonDay);
 
@@ -387,6 +394,7 @@ function showCalendar(daysInMonth, firstDay, saxonYear, saxonMonth, saxonDay) {
   // clearing any previous cells
   calendarBody.innerHTML = "";
   // fill in month and year
+
   monthYear.innerHTML = getSaxonMonth(saxonMonth) + " " + saxonYear;
   // these two lines are for dropdown boxes
   // selectYear.value = year;
