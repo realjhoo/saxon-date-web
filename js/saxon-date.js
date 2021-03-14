@@ -271,7 +271,7 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
   const ssYear = ssDate.getFullYear();
 
   const currDate = new Date();
-  const currDay = currDate.getDate() + 1;
+  const currDay = currDate.getDate();
   const currMonth = currDate.getMonth() + 1;
   const currYear = currDate.getFullYear();
 
@@ -331,8 +331,10 @@ function getSaxonDate(intercalary, ssDateString, today, year) {
 
   saxonDay += daysElapsed; // now agrees with day of the week
   const saxonYear = getSaxonYear(today, moon, year);
+
+  // -4713-01-01 was a Monday (modulus 1) Add 1 tp JD tp push Sunday
   const saxonDate =
-    getDayName(todayJulianDate % 7) +
+    getDayName((todayJulianDate + 1) % 7) +
     " " +
     saxonDay +
     " " +
