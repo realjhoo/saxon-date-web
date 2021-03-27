@@ -23,23 +23,20 @@ function getMeliaName(index) {
 }
 
 // --------------------------------------------------------
-function getJulianDay() {
-  // returns current julian date, off set UTC+1 tho
-  let today = new Date();
-  let year = today.getUTCFullYear(),
-    month = today.getUTCMonth(),
-    date = today.getUTCDate(),
-    hour = today.getUTCHours();
+function getDayName(index) {
+  return [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ][index];
+}
 
-  month++; // because javascript counts 0-11
-
-  // correct for Central European Standard Time
-  // so that between 11pm and 12am UTC, the date
-  // is incremented
-  if (hour === 23) {
-    date++;
-  }
-
+// --------------------------------------------------------
+function getJulianDay(year, month, date) {
   // calculate julian date - thanks stackoverflow (jbabey)
   let a = Math.floor((14 - month) / 12);
   let y = year + 4800 - a;
@@ -109,23 +106,12 @@ function sliceJD(ND) {
 }
 
 // --------------------------------------------------------
-function showNumerareDierum(triennium, melia, centum, thebeats) {
-  let today = new Date();
-
+function showNumerareDierum(triennium, melia, centum, thebeats, dotw) {
   const output = document.querySelector(".output");
 
-  output.innerHTML = `Today, is the <span class="green">${centum}${getOrdinalIndicator(
+  output.innerHTML = `Now: <span class="green"> (${triennium}${melia}${centum}) ${dotw} ${centum}${getOrdinalIndicator(
     centum
-  )} day of ${getMeliaName(
-    melia
-  )} in Triennium ${triennium}.</span></p> <p>Or, <span class="green">${getMeliaName(
-    melia
-  )} ${centum}, ${triennium}</span>.</p> 
-  <p>Or, even: <span class="green">${triennium}.${melia}.${centum}</span>.</p> 
-  <p>The time, in beats, may be appended: <span class="green">${triennium} ${melia} ${centum} ${thebeats}</span></p>
-  <p>Or, <span class="green">${centum} ${getMeliaName(
-    melia
-  )} ${triennium} ${thebeats}</span></p> `;
+  )} ${getMeliaName(melia)} ${triennium} ${thebeats}</span>`;
 }
 
 // --------------------------------------------------------
@@ -166,14 +152,80 @@ function getOrdinalIndicator(number) {
 }
 
 // --------------------------------------------------------
+function addDatePicker() {
+  let now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  let date = now.getDate();
+
+  // input control requires leading zeros
+  if (month < 10) {
+    month = month.toString().padStart(2, 0);
+  }
+
+  if (date < 10) {
+    date = date.toString().padStart(2, 0);
+  }
+
+  let today = year + "-" + month + "-" + date;
+
+  let datePicker = document.getElementById("date-picker");
+
+  datePicker.value = today;
+
+  datePicker.addEventListener("change", (event) => {
+    // selectedDate is 00:00 UTC, so 5 or 6pm Central
+    // if time picker is added, this can be made more precise
+    let selectedDate = new Date(event.target.value);
+    let year = selectedDate.getUTCFullYear();
+    let month = selectedDate.getUTCMonth() + 1;
+    let date = selectedDate.getUTCDate();
+
+    let ND = getJulianDay(year, month, date);
+    let [triennium, melia, centum] = sliceJD(ND);
+    let dotw = getDayName((ND + 1) % 7);
+
+    const output = document.querySelector(".selected-date-output");
+    output.style.visibility = "visible";
+
+    output.innerHTML = `Then: <span class="green">(${triennium}${melia}${centum}) ${dotw} ${centum}${getOrdinalIndicator(
+      centum
+    )} ${getMeliaName(melia)} ${triennium}</span>`;
+  });
+}
+
+// --------------------------------------------------------
+function getUTCdate() {
+  // returns current julian date, off set UTC+1 tho
+  let today = new Date();
+  let year = today.getUTCFullYear(),
+    month = today.getUTCMonth(),
+    date = today.getUTCDate(),
+    hour = today.getUTCHours();
+
+  month++; // because javascript counts 0-11
+
+  // correct for Central European Standard Time so that
+  // between 11pm and 12am UTC, the date is incremented
+  if (hour === 23) {
+    date++;
+  }
+
+  return [year, month, date];
+}
+
+// --------------------------------------------------------
 function main() {
-  let ND = getJulianDay();
+  let [year, month, date] = getUTCdate();
+  let ND = getJulianDay(year, month, date);
   let thebeats = getBeats();
   let [triennium, melia, centum] = sliceJD(ND);
+  let dotw = getDayName((ND + 1) % 7);
 
-  showNumerareDierum(triennium, melia, centum, thebeats);
+  showNumerareDierum(triennium, melia, centum, thebeats, dotw);
 }
 
 // --------------------------------------------------------
 main();
 setInterval(main, 1000);
+addDatePicker();
