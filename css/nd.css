@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400&display=swap");
 
+:root {
+  --bg-color: #333;
+  --txt-color: #e2e2e2;
+}
+
 *,
 *::before,
 *::after {
@@ -10,8 +15,8 @@
 }
 
 body {
-  background-color: #333;
-  color: #e2e2e2;
+  background-color: var(--bg-color);
+  color: var(--txt-color);
   font-family: "Rajdhani", sans-serif;
 }
 
@@ -37,6 +42,13 @@ h1 {
   visibility: hidden;
 }
 
+#date-picker {
+  background-color: transparent;
+  color: var(--txt-color);
+  padding: 0.4rem;
+  margin-top: 1.2rem;
+}
+
 .button-container {
   margin: 4rem;
 }
@@ -45,9 +57,9 @@ button {
   margin-left: 50%;
   transform: translate(-50%);
   border-radius: 8px;
-  border: 2px solid #e2e2e2;
-  background-color: #333;
-  color: #e2e2e2;
+  border: 2px solid var(--txt-color);
+  background-color: var(--bg-color);
+  color: var(--txt-color);
   padding: 0.8rem 2.5rem;
   font-size: 1rem;
   cursor: pointer;
@@ -56,8 +68,8 @@ button {
 }
 
 button:hover {
-  background-color: #e2e2e2;
-  color: #333;
+  background-color: var(--txt-color);
+  color: var(--bg-color);
 }
 
 .explainer {
@@ -73,7 +85,7 @@ button:hover {
 }
 
 a {
-  color: #fff;
+  color: var(--txt-color);
 }
 
 .green {

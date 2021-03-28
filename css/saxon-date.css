@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Germania+One&family=Raleway:wght@300;500&display=swap");
 
+:root {
+  --bg-color: #333;
+  --txt-color: #e2e2e2;
+}
+
 /*  reset */
 *,
 *::before,
@@ -11,8 +16,8 @@
 }
 
 body {
-  background-color: #333;
-  color: #e2e2e2;
+  background-color: var(--bg-color);
+  color: var(--txt-color);
 }
 
 header p {
@@ -38,9 +43,9 @@ button {
   margin-left: 50%;
   transform: translate(-50%);
   border-radius: 8px;
-  border: 2px solid #e2e2e2;
-  background-color: #333;
-  color: #e2e2e2;
+  border: 2px solid var(--txt-color);
+  background-color: var(--bg-color);
+  color: var(--txt-color);
   padding: 0.8rem 2.5rem;
   font-size: 1rem;
   cursor: pointer;
@@ -49,8 +54,8 @@ button {
 }
 
 button:hover {
-  background-color: #e2e2e2;
-  color: #333;
+  background-color: var(--txt-color);
+  color: var(--bg-color);
 }
 
 .explainer {
@@ -80,5 +85,5 @@ button:hover {
 }
 
 a {
-  color: #e2e2e2;
+  color: var(--txt-color);
 }

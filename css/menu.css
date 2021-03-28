@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 
+:root {
+  --menu-color: #323f4e;
+  --text-color: #e2e2e2;
+}
+
 *,
 *::before,
 *::after {
@@ -14,7 +19,7 @@ nav {
   justify-content: space-around;
   align-items: center;
   min-height: 8vh;
-  background-color: #323f4e;
+  background-color: var(--menu-color);
   font-family: "Poppins", sans-serif;
 }
 
@@ -23,7 +28,7 @@ nav {
 }
 
 .burger div {
-  background-color: #e2e2e2;
+  background-color: var(--text-color);
   width: 25px;
   height: 2px;
   margin: 5px;
@@ -43,7 +48,7 @@ nav {
 }
 
 .logo {
-  color: #e2e2e2;
+  color: var(--text-color);
   text-transform: uppercase;
   letter-spacing: 5px;
   font-size: 20px;
@@ -51,7 +56,7 @@ nav {
 
 .nav-links {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   width: 40%;
 }
 
@@ -60,7 +65,7 @@ nav {
 }
 
 .nav-links a {
-  color: #e2e2e2;
+  color: var(--text-color);
   text-decoration: none;
   letter-spacing: 3px;
   font-size: 14px;
@@ -89,7 +94,7 @@ nav {
     left: 0;
     height: 92vh;
     top: 8vh;
-    background-color: #323f4e;
+    background-color: var(--menu-color);
     display: flex;
     flex-direction: column;
     align-items: center;

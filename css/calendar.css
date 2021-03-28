@@ -1,5 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200&display=swap");
 
+:root {
+  --bg-color: #333;
+  --txt-color: #e2e2e2;
+  --hilite-color: lightblue;
+}
+
 .calendar-container {
   text-align: center;
 }
@@ -25,11 +31,11 @@ th {
 }
 
 .highlight-cell {
-  background-color: lightblue;
-  color: #333;
+  background-color: var(--hilite-color);
+  color: var(--bg-color);
 }
 
 td {
-  outline: 1px #e2e2e2 solid;
+  outline: 1px var(--txt-color) solid;
   padding: 8px;
 }

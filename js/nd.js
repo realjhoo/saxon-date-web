@@ -115,6 +115,46 @@ function showNumerareDierum(triennium, melia, centum, thebeats, dotw) {
 }
 
 // --------------------------------------------------------
+function addDatePicker() {
+  let now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  let date = now.getDate();
+
+  // input control requires leading zeros
+  if (month < 10) {
+    month = month.toString().padStart(2, 0);
+  }
+
+  if (date < 10) {
+    date = date.toString().padStart(2, 0);
+  }
+
+  let datePicker = document.getElementById("date-picker");
+  datePicker.value = `${year}-${month}-${date}`;
+
+  datePicker.addEventListener("change", (event) => {
+    // selectedDate is 00:00 UTC, so 5 or 6pm Central
+    // if time picker is added, this can be made more precise
+    let selectedDate = new Date(event.target.value);
+    let year = selectedDate.getUTCFullYear();
+    let month = selectedDate.getUTCMonth() + 1;
+    let date = selectedDate.getUTCDate();
+
+    let ND = getJulianDay(year, month, date);
+    let [triennium, melia, centum] = sliceJD(ND);
+    let dotw = getDayName((ND + 1) % 7);
+
+    const output = document.querySelector(".selected-date-output");
+    output.style.visibility = "visible";
+
+    output.innerHTML = `Then: <span class="green">(${ND}) ${dotw} ${centum}${getOrdinalIndicator(
+      centum
+    )} ${getMeliaName(melia)} ${triennium}</span>`;
+  });
+}
+
+// --------------------------------------------------------
 function toggleit() {
   // toggles visibility of explainer in DOM - obviously
   const toggleButton = document.getElementById("toggle-button");
@@ -152,51 +192,8 @@ function getOrdinalIndicator(number) {
 }
 
 // --------------------------------------------------------
-function addDatePicker() {
-  let now = new Date();
-  let year = now.getFullYear();
-  let month = now.getMonth() + 1;
-  let date = now.getDate();
-
-  // input control requires leading zeros
-  if (month < 10) {
-    month = month.toString().padStart(2, 0);
-  }
-
-  if (date < 10) {
-    date = date.toString().padStart(2, 0);
-  }
-
-  let today = year + "-" + month + "-" + date;
-
-  let datePicker = document.getElementById("date-picker");
-
-  datePicker.value = today;
-
-  datePicker.addEventListener("change", (event) => {
-    // selectedDate is 00:00 UTC, so 5 or 6pm Central
-    // if time picker is added, this can be made more precise
-    let selectedDate = new Date(event.target.value);
-    let year = selectedDate.getUTCFullYear();
-    let month = selectedDate.getUTCMonth() + 1;
-    let date = selectedDate.getUTCDate();
-
-    let ND = getJulianDay(year, month, date);
-    let [triennium, melia, centum] = sliceJD(ND);
-    let dotw = getDayName((ND + 1) % 7);
-
-    const output = document.querySelector(".selected-date-output");
-    output.style.visibility = "visible";
-
-    output.innerHTML = `Then: <span class="green">(${triennium}${melia}${centum}) ${dotw} ${centum}${getOrdinalIndicator(
-      centum
-    )} ${getMeliaName(melia)} ${triennium}</span>`;
-  });
-}
-
-// --------------------------------------------------------
 function getUTCdate() {
-  // returns current julian date, off set UTC+1 tho
+  // returns current julian date, offset UTC+1 tho
   let today = new Date();
   let year = today.getUTCFullYear(),
     month = today.getUTCMonth(),
