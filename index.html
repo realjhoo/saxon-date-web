@@ -24,7 +24,6 @@
       <ul class="nav-links">
         <li><a href="#">Saxon Date</a></li>
         <li><a href="nd.html">Numerare Dierum</a></li>
-        <!-- <li><a href="#">Work</a></li> -->
       </ul>
     </nav>
 
@@ -64,45 +63,152 @@
     <!-- Text -->
     <div class="explainer">
       <p>
-        According to the
-        <a href="https://en.wikipedia.org/wiki/Bede">Venerable Bede</a>, the
-        pre-Christian Angles, Saxons, Jutes and Frisians used a soli-lunar
-        calendar. In his book, <i>De Temporum Ratione</i>, published in the 725,
-        Bede lays out the rules by which this calendar worked, and the names of
-        the months among the English peoples. I became curious how this calendar
-        worked. So, using Bede's rules, I coded this Lunar calendar in
-        Javascript. Because I could. Thanks, Bede.
+        The purpose of the Saxon Date project is to create a calendar that
+        approximates the native calendar used by the Anglo-Saxon peoples at the
+        point in time where they become visible to history. I am not attempting
+        to be create precision, nor am I claiming that I have miraculously
+        recovered the lost calendar of our ancestors. It is simply a way to
+        represent time, which is tied to the seasons and rhythms of the natural
+        world and that would have been familiar to my ancestors such that, if I
+        told them that it was the third day of Ereyule, they would have a pretty
+        good idea of what (when) I was talking about.
       </p>
+
+      According to the
+      <a href="https://en.wikipedia.org/wiki/Bede">Venerable Bede</a>, the
+      <a href="https://en.wikipedia.org/wiki/Angles">Angles</a>,
+      <a href="https://en.wikipedia.org/wiki/Saxons">Saxons</a>,
+      <a href="https://en.wikipedia.org/wiki/Jutes">Jutes</a> and
+      <a href="https://en.wikipedia.org/wiki/Frisians">Frisians</a> (see
+      <a href="https://en.wikipedia.org/wiki/Anglo-Saxon_settlement_of_Britain"
+        >here</a
+      >) marked time with a
+      <a href="https://en.wikipedia.org/wiki/Lunisolar_calendar"
+        >lunisolar calendar</a
+      >. In his book,
+      <a href="https://en.wikipedia.org/wiki/The_Reckoning_of_Time"
+        ><i>De Temporum Ratione</i></a
+      >, published in 725, Bede gives us a general idea of how the ancient
+      Anglo-Saxon calendar worked, along with the names of the months and a few
+      references to holidays. Bede was not interested in reconstructing the
+      pagan calendar of his ancestors, but was instead attempting to show that
+      his ancestors were backward and uncivilized barbarians. This would allow
+      him to give the impression that Christianity, and the universal culture
+      that followed it, had brought progress and Truth to England. To the degree
+      that he cared for the history of his own people, it was only as a tool to
+      support the Church.
+
+      <p>
+        Nevertheless, using what information he gave, and supplementing it with
+        what we know about the relatives of the Anglo-Saxons on the continent,
+        we can arrive at a set of rules for a reconstructed Anglo-Saxon
+        calendar, and then, using these rules, set about generating a Saxonish
+        calendar date. This calendar, which I have rather unimaginatively called
+        the Saxon Date, would then give us an approximation of what the date
+        might have been, had the ancient Anglo-Saxon calendar survived in use
+        among the Anglophonic peoples.
+      </p>
+
+      <p>
+        These rules are based on what we know about
+        <a href="https://en.wikipedia.org/wiki/Early_Germanic_calendars"
+          >ancient Germanic calendars</a
+        >, and the bits that Bede has left us. Note that, for the purposes of
+        this (or any other) lunisolar calendar, month and moon are
+        interchangeable terms.
+      </p>
+
       <span>
         <li>Rule 1</li>
         <p>
           Each month begins at the new moon. There are 12 months in a regular
-          year, and 13 in an intercalary year.
+          year, and 13 in an
+          <a href="https://en.wikipedia.org/wiki/Intercalation_(timekeeping)"
+            >intercalary year</a
+          >.
         </p>
         <li>Rule 2</li>
         <p>The year begins with the new moon following the winter solstice.</p>
         <li>Rule 3</li>
         <p>
           Although the beginning of the year is linked to the winter solstice,
-          the rule on intercalary months is governed by the summer solstice: If,
-          within a fortnight following the summer solstice, a new moon occurs,
-          the next new moon (i.e., the one that will happen approximately 29
-          days later) is an intercalary month (Trilitha), which occurs every
-          three to five years, making it a 13 month year, which keeps the
-          seasons aligned. This was especially important for an agricultural
-          society.
+          the rule governing intercalary months is governed by the summer
+          solstice. If a new moon occurs within a fortnight following the summer
+          solstice, the next new moon (i.e., the one that occurs 29.5 days
+          later) is an intercalary month, which Bede informs us was known as
+          “Trilitha.” This should occur every three to five years, the purpose
+          of which is to keep the seasons aligned with the calendar. This was
+          especially important for an agricultural society.
         </p>
       </span>
+
       <p>
-        For the purpose of saxon-date, I am using the Runic Era (RE) year. The
-        RE is not a real thing. It basically just adds 250 years to the current
+        For the purpose of Saxon Date, I am using the Runic Era (RE) year. The
+        RE is not a real thing. It basically adds 250 years to the current
         Gregorian year. I wanted to use a year/era that was older than the
-        current era to show that this traditional indigenous calendar, and the
-        culture it is attached to, pre-dates the Christianization of Europe.
-        However, since the Germanic peoples of northwest Europe were largely
-        illiterate at that time, there does not seem to a historical era that
-        fits the bill.
+        current Christian era in order to show that this traditional indigenous
+        calendar, and the culture in which it originates, predates the
+        Christianization of Europe. However, since the Germanic peoples were
+        largely illiterate at that time, there does not seem to be an historical
+        era that fits the bill.
       </p>
+      <p>
+        This brings up a larger question regarding the use of numbers. The
+        Saxons may not have seen the use in having each year assigned a unique
+        number. Perhaps they would have appreciated a cycle of nine years, or
+        numbering the years since the current king came to power. But, for my
+        purpose, a year number needs to be assigned, and the RE is as good as
+        any. As with the entire Saxon Date project, I am open to suggestions.
+      </p>
+
+      <p>
+        In addition, our way of citing the date, where we mention the name of
+        the month, followed by the number of days that have elapsed since the
+        month began, is a modern innovation. The Romans counted days before and
+        after the middle of the month. Read about that here. The ancient English
+        peoples may have preferred to note the moon phase, or count the number
+        of weeks. The possibilities are endless. But, again, for my purposes,
+        some amount of precision was desired. And, too, no matter how they cited
+        the date in the 5th century, had the calendar survived, they would have,
+        in all likelihood, began to count days, because it is super-convenient.
+        I’ll note here, which I have elaborated on in more detail elsewhere,
+        that I used the same approach with the month names. For example,
+        “Eostre” is now pronounced “Easter”. It makes sense that this would have
+        happened to the celebration and the name of the month simultaneously.
+        For “Hretha”, I dropped the initial “H”, as that seems to be the way
+        English has developed. I also dropped the “month” suffix. I open to
+        reasons why this was wrong.
+      </p>
+
+      <p>
+        Note: For Rule 3, I initially read a source that the year was
+        intercalary if a new moon occurred within 14 (or possibly 12) days
+        following the summer solstice. So far, this appears to produce too many
+        intercalary years. This rule needs a tweak, but I have not had time to
+        have a think about it yet. Suggestions welcome.
+      </p>
+
+      <p>
+        Note #2: Saxon Date calculates the date of the last winter solstice,
+        then, using math, approximates the date of the next new moon, which it
+        labels "Afteryule". The months (new moons) then follow in order, as
+        described by Bede. The program also calculates the date of the summer
+        solstice, and, if a new moon follows within 14 days, adds an extra month
+        in the middle of the sequence (Trilitha). There is a lot of room for
+        error in these calculations. The new moon especially is subject to a
+        non-cumulative error of a day or two each month. This unintentionally
+        mimics the situation in a real observational calendar, where the dates
+        could not be set until the new moon actually happened. Only after the
+        introduction of writing could information be accurately recorded, and
+        the 19-year
+        <a href="https://en.wikipedia.org/wiki/Metonic_cycle"
+          >Metonic (link) cycle</a
+        >
+        discovered. That, I believe, allowed for an essentially perpetual
+        calendar, giving our ancestors the ability to plan any dates for any
+        time in the future (or the past, for that matter).
+      </p>
+      <p>Note #3: I may recast this calendar using the Metonic cycle.</p>
     </div>
 
     <script src="js/saxon-date.js"></script>
